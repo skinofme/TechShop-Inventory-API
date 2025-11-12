@@ -1,17 +1,12 @@
 using Microsoft.EntityFrameworkCore;
+using TechShop.Inventory.Infrastructure;
 using TechShop.Inventory.Infrastructure.Persistence.Context;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-#region Infrastructure DI
-
-builder.Services.AddDbContext<TechShopDbContext>(options 
-	=> options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-#endregion
-
+builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
