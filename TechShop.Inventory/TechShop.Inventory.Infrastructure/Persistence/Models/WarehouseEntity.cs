@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace TechShop.Inventory.Infrastructure.Persistence.Models;
 
-public partial class Warehouse
+public partial class WarehouseEntity
 {
     public int IdWarehouse { get; set; }
 
@@ -13,5 +13,5 @@ public partial class Warehouse
 
     public string Location { get; set; } = null!;
 
-    public virtual ICollection<StockItem> StockItems { get; set; } = new List<StockItem>();
+    public virtual ICollection<StockItemEntity> StockItems { get; set; } = new List<StockItemEntity>();
 }

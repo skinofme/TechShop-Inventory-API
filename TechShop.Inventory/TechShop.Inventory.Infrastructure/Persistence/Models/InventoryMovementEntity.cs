@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace TechShop.Inventory.Infrastructure.Persistence.Models;
 
-public partial class InventoryMovement
+public partial class InventoryMovementEntity
 {
     public int IdInventoryMovement { get; set; }
 
@@ -19,5 +19,5 @@ public partial class InventoryMovement
 
     public string? ReferenceId { get; set; }
 
-    public virtual StockItem IdStockItemNavigation { get; set; } = null!;
+    public virtual StockItemEntity IdStockItemNavigation { get; set; } = null!;
 }

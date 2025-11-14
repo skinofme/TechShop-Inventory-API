@@ -16,15 +16,15 @@ public partial class TechShopInventoryContext : DbContext
     {
     }
 
-    public virtual DbSet<InventoryMovement> InventoryMovements { get; set; }
+    public virtual DbSet<InventoryMovementEntity> InventoryMovements { get; set; }
 
-    public virtual DbSet<StockItem> StockItems { get; set; }
+    public virtual DbSet<StockItemEntity> StockItems { get; set; }
 
-    public virtual DbSet<Warehouse> Warehouses { get; set; }
+    public virtual DbSet<WarehouseEntity> Warehouses { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<InventoryMovement>(entity =>
+        modelBuilder.Entity<InventoryMovementEntity>(entity =>
         {
             entity.HasKey(e => e.IdInventoryMovement);
 
@@ -38,7 +38,7 @@ public partial class TechShopInventoryContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull);
         });
 
-        modelBuilder.Entity<StockItem>(entity =>
+        modelBuilder.Entity<StockItemEntity>(entity =>
         {
             entity.HasKey(e => e.IdStockItem);
 
@@ -52,7 +52,7 @@ public partial class TechShopInventoryContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull);
         });
 
-        modelBuilder.Entity<Warehouse>(entity =>
+        modelBuilder.Entity<WarehouseEntity>(entity =>
         {
             entity.HasKey(e => e.IdWarehouse);
 

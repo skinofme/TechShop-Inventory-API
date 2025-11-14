@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace TechShop.Inventory.Infrastructure.Persistence.Models;
 
-public partial class StockItem
+public partial class StockItemEntity
 {
     public int IdStockItem { get; set; }
 
@@ -17,7 +17,7 @@ public partial class StockItem
 
     public DateTime LastUpdated { get; set; }
 
-    public virtual Warehouse IdWarehouseNavigation { get; set; } = null!;
+    public virtual WarehouseEntity IdWarehouseNavigation { get; set; } = null!;
 
-    public virtual ICollection<InventoryMovement> InventoryMovements { get; set; } = new List<InventoryMovement>();
+    public virtual ICollection<InventoryMovementEntity> InventoryMovements { get; set; } = new List<InventoryMovementEntity>();
 }
