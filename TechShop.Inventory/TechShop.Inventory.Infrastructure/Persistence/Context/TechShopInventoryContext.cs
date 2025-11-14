@@ -1,0 +1,70 @@
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
+using TechShop.Inventory.Infrastructure.Persistence.Models;
+
+namespace TechShop.Inventory.Infrastructure.Persistence.Context;
+
+public partial class TechShopInventoryContext : DbContext
+{
+    public TechShopInventoryContext()
+    {
+    }
+
+    public TechShopInventoryContext(DbContextOptions<TechShopInventoryContext> options)
+        : base(options)
+    {
+    }
+
+    public virtual DbSet<InventoryMovement> InventoryMovements { get; set; }
+
+    public virtual DbSet<StockItem> StockItems { get; set; }
+
+    public virtual DbSet<Warehouse> Warehouses { get; set; }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<InventoryMovement>(entity =>
+        {
+            entity.HasKey(e => e.IdInventoryMovement);
+
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysdatetime())");
+            entity.Property(e => e.MovementType).HasMaxLength(20);
+            entity.Property(e => e.Reason).HasMaxLength(200);
+            entity.Property(e => e.ReferenceId).HasMaxLength(50);
+
+            entity.HasOne(d => d.IdStockItemNavigation).WithMany(p => p.InventoryMovements)
+                .HasForeignKey(d => d.IdStockItem)
+                .OnDelete(DeleteBehavior.ClientSetNull);
+        });
+
+        modelBuilder.Entity<StockItem>(entity =>
+        {
+            entity.HasKey(e => e.IdStockItem);
+
+            entity.HasIndex(e => new { e.IdWarehouse, e.Sku }, "UQ_StockItems_IdWarehouse_Sku").IsUnique();
+
+            entity.Property(e => e.LastUpdated).HasDefaultValueSql("(sysdatetime())");
+            entity.Property(e => e.Sku).HasMaxLength(50);
+
+            entity.HasOne(d => d.IdWarehouseNavigation).WithMany(p => p.StockItems)
+                .HasForeignKey(d => d.IdWarehouse)
+                .OnDelete(DeleteBehavior.ClientSetNull);
+        });
+
+        modelBuilder.Entity<Warehouse>(entity =>
+        {
+            entity.HasKey(e => e.IdWarehouse);
+
+            entity.HasIndex(e => e.Code, "UQ_Warehoses_Code").IsUnique();
+
+            entity.Property(e => e.Code).HasMaxLength(20);
+            entity.Property(e => e.Location).HasMaxLength(200);
+            entity.Property(e => e.Name).HasMaxLength(100);
+        });
+
+        OnModelCreatingPartial(modelBuilder);
+    }
+
+    partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+}

@@ -1,6 +1,4 @@
-using Microsoft.EntityFrameworkCore;
 using TechShop.Inventory.Infrastructure;
-using TechShop.Inventory.Infrastructure.Persistence.Context;
 
 var builder = WebApplication.CreateBuilder(args);
 
