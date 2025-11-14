@@ -1,8 +1,8 @@
 USE master;
-CREATE DATABASE TechShop_InventoryDB;
-GO;
+CREATE DATABASE TechShopInventory;
+GO
 
-USE TechShop_InventoryDB;
+USE TechShopInventory;
 
 CREATE TABLE Warehouses(
     IdWarehouse INT IDENTITY,
