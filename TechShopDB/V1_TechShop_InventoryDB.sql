@@ -6,7 +6,7 @@ USE TechShopInventory;
 
 CREATE TABLE Warehouses(
     IdWarehouse INT IDENTITY,
-	Code NVARCHAR(20),
+	Code NVARCHAR(20) NOT NULL,
 	Name NVARCHAR(100) NOT NULL,
 	Location NVARCHAR(200) NOT NULL,
 
@@ -20,11 +20,13 @@ CREATE TABLE StockItems(
 	Sku NVARCHAR(50) NOT NULL,
 	QuantityAvailable INT NOT NULL,
 	QuantityReserved INT NOT NULL,
+	QuantityTotal AS (QuantityAvailable + QuantityReserved) PERSISTED,
 	LastUpdated DATETIME2 NOT NULL DEFAULT SYSDATETIME(),
 
 	CONSTRAINT PK_StockItems PRIMARY KEY (IdStockItem),
+	CONSTRAINT FK_StockItems_Warehouses_IdWarehouse FOREIGN KEY (IdWarehouse) REFERENCES Warehouses(IdWarehouse),
 	CONSTRAINT UQ_StockItems_IdWarehouse_Sku UNIQUE(IdWarehouse, Sku),
-	CONSTRAINT FK_StockItems_Warehouses_IdWarehouse FOREIGN KEY (IdWarehouse) REFERENCES Warehouses(IdWarehouse)
+	CONSTRAINT CK_StockItems_Quantity CHECK (QuantityAvailable >= 0 AND QuantityReserved >= 0 )
 );
 
 CREATE TABLE InventoryMovements(
@@ -35,6 +37,25 @@ CREATE TABLE InventoryMovements(
 	CreatedAt DATETIME2 NOT NULL DEFAULT SYSDATETIME(),
 	Reason NVARCHAR(200), 								-- Compra, Devolucion, consiliacion, etc
 	ReferenceId NVARCHAR(50), 							-- Codigo de orden, codigo de autorizacion
+
+	CONSTRAINT CK_Movements_MovementType CHECK (MovementType IN ('IN', 'OUT', 'RESERVE', 'RELEASE', 'ADJUST')),
+	CONSTRAINT CK_Movements_Quantity CHECK (Quantity > 0),
 	CONSTRAINT PK_InventoryMovements PRIMARY KEY (IdInventoryMovement),
 	CONSTRAINT FK_InventoryMovements_StockItems_IdStockItem FOREIGN KEY (IdStockItem) REFERENCES StockItems(IdStockItem)
+);
+
+CREATE TABLE StockReservations (
+    IdReservation INT IDENTITY,
+    IdStockItem INT NOT NULL,
+    Quantity INT NOT NULL,
+    CreatedAt DATETIME2 NOT NULL DEFAULT SYSDATETIME(),
+    ExpiresAt DATETIME2 NULL,           
+    Status NVARCHAR(20) NOT NULL,       
+    Reason NVARCHAR(200),
+    ReferenceId NVARCHAR(50),            
+
+	CONSTRAINT CK_StockReservations_Status CHECK (Status IN ('PENDING', 'CONFIRMED', 'CANCELLED', 'EXPIRED', 'RELEASED')),
+	CONSTRAINT CK_StockReservations_Quantity CHECK( Quantity > 0 ),
+	CONSTRAINT PK_StockReservations PRIMARY KEY(IdReservation),
+    CONSTRAINT FK_StockReservations_StockItems FOREIGN KEY (IdStockItem) REFERENCES StockItems(IdStockItem)
 );
