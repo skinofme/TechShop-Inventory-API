@@ -20,7 +20,13 @@ public partial class TechShopInventoryContext : DbContext
 
     public virtual DbSet<StockItemEntity> StockItems { get; set; }
 
+    public virtual DbSet<StockReservationEntity> StockReservations { get; set; }
+
     public virtual DbSet<WarehouseEntity> Warehouses { get; set; }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseSqlServer("Server=localhost; Database=TechShopInventory; User=sa; Password=quesejodanlostemblores!8; TrustServerCertificate=true;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -45,11 +51,27 @@ public partial class TechShopInventoryContext : DbContext
             entity.HasIndex(e => new { e.IdWarehouse, e.Sku }, "UQ_StockItems_IdWarehouse_Sku").IsUnique();
 
             entity.Property(e => e.LastUpdated).HasDefaultValueSql("(sysdatetime())");
+            entity.Property(e => e.QuantityTotal).HasComputedColumnSql("([QuantityAvailable]+[QuantityReserved])", true);
             entity.Property(e => e.Sku).HasMaxLength(50);
 
             entity.HasOne(d => d.IdWarehouseNavigation).WithMany(p => p.StockItems)
                 .HasForeignKey(d => d.IdWarehouse)
                 .OnDelete(DeleteBehavior.ClientSetNull);
+        });
+
+        modelBuilder.Entity<StockReservationEntity>(entity =>
+        {
+            entity.HasKey(e => e.IdReservation);
+
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysdatetime())");
+            entity.Property(e => e.Reason).HasMaxLength(200);
+            entity.Property(e => e.ReferenceId).HasMaxLength(50);
+            entity.Property(e => e.Status).HasMaxLength(20);
+
+            entity.HasOne(d => d.IdStockItemNavigation).WithMany(p => p.StockReservations)
+                .HasForeignKey(d => d.IdStockItem)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_StockReservations_StockItems");
         });
 
         modelBuilder.Entity<WarehouseEntity>(entity =>

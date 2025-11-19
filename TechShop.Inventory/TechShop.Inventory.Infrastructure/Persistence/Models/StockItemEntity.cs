@@ -15,9 +15,13 @@ public partial class StockItemEntity
 
     public int QuantityReserved { get; set; }
 
+    public int? QuantityTotal { get; set; }
+
     public DateTime LastUpdated { get; set; }
 
     public virtual WarehouseEntity IdWarehouseNavigation { get; set; } = null!;
 
     public virtual ICollection<InventoryMovementEntity> InventoryMovements { get; set; } = new List<InventoryMovementEntity>();
+
+    public virtual ICollection<StockReservationEntity> StockReservations { get; set; } = new List<StockReservationEntity>();
 }
