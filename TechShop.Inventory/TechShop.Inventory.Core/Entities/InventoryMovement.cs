@@ -32,7 +32,7 @@ namespace TechShop.Inventory.Core.Entities
 		}
 
 		// Constructor to rehydrate a entity
-		public InventoryMovement(int idInventoryMovement, int idStockItem, MovementType movementType, int quantity, string reason, string referenceId)
+		internal InventoryMovement(int idInventoryMovement, int idStockItem, MovementType movementType, int quantity, string reason, string referenceId)
 		{
 			IdInventoryMovement = idInventoryMovement;
 			IdStockItem = idStockItem;
