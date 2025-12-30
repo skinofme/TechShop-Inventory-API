@@ -49,8 +49,8 @@ CREATE TABLE StockReservations (
     IdStockItem INT NOT NULL,
     Quantity INT NOT NULL,
     CreatedAt DATETIME2 NOT NULL DEFAULT SYSDATETIME(),
-    ExpiresAt DATETIME2 NULL,           
-    Status NVARCHAR(20) NOT NULL,       
+    ExpiresAt DATETIME2 NOT NULL,
+    Status NVARCHAR(20) NOT NULL DEFAULT 'PENDING',
     Reason NVARCHAR(200),
     ReferenceId NVARCHAR(50),            
 
