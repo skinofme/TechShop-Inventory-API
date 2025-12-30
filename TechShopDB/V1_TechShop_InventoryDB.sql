@@ -54,7 +54,7 @@ CREATE TABLE StockReservations (
     Reason NVARCHAR(200),
     ReferenceId NVARCHAR(50),            
 
-	CONSTRAINT CK_StockReservations_Status CHECK (Status IN ('PENDING', 'CONFIRMED', 'CANCELLED', 'EXPIRED', 'RELEASED')),
+	CONSTRAINT CK_StockReservations_Status CHECK (Status IN ('PENDING', 'CONFIRMED', 'CANCELLED', 'EXPIRED')),
 	CONSTRAINT CK_StockReservations_Quantity CHECK( Quantity > 0 ),
 	CONSTRAINT PK_StockReservations PRIMARY KEY(IdReservation),
     CONSTRAINT FK_StockReservations_StockItems FOREIGN KEY (IdStockItem) REFERENCES StockItems(IdStockItem)
