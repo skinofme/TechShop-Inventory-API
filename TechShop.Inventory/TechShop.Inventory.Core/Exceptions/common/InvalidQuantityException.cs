@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TechShop.Inventory.Core.Exceptions.StockItem
+namespace TechShop.Inventory.Core.Exceptions.common
 {
 	internal class InvalidQuantityException : Exception
 	{
