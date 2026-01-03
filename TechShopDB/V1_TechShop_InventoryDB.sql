@@ -45,7 +45,7 @@ CREATE TABLE InventoryMovements(
 );
 
 CREATE TABLE StockReservations (
-    IdReservation INT IDENTITY,
+    IdStockReservation INT IDENTITY,
     IdStockItem INT NOT NULL,
     Quantity INT NOT NULL,
     CreatedAt DATETIME2 NOT NULL DEFAULT SYSDATETIME(),
@@ -54,8 +54,8 @@ CREATE TABLE StockReservations (
     Reason NVARCHAR(200),
     ReferenceId NVARCHAR(50),            
 
+	CONSTRAINT PK_StockReservations PRIMARY KEY(IdStockReservation),
 	CONSTRAINT CK_StockReservations_Status CHECK (Status IN ('PENDING', 'CONFIRMED', 'CANCELLED', 'EXPIRED')),
 	CONSTRAINT CK_StockReservations_Quantity CHECK( Quantity > 0 ),
-	CONSTRAINT PK_StockReservations PRIMARY KEY(IdReservation),
     CONSTRAINT FK_StockReservations_StockItems FOREIGN KEY (IdStockItem) REFERENCES StockItems(IdStockItem)
 );
