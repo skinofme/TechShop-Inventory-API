@@ -1,4 +1,6 @@
 ﻿using TechShop.Inventory.Core.Enums.InventoryMovement;
+using TechShop.Inventory.Core.Enums.StockReservation;
+using TechShop.Inventory.Core.Exceptions.common;
 using TechShop.Inventory.Core.Exceptions.StockItem;
 
 namespace TechShop.Inventory.Core.Entities
@@ -19,12 +21,18 @@ namespace TechShop.Inventory.Core.Entities
 
 		public int QuantityTotal => QuantityAvailable + QuantityReserved;
 
+
 		private readonly List<InventoryMovement> _movements = new();
+		private readonly List<StockReservation> _reservations = new();
 
 		public IReadOnlyCollection<InventoryMovement> Movements => _movements;
+		public IReadOnlyCollection<StockReservation> Reservations => _reservations;
 
+
+		#region	CONSTRUCTORS
 
 		protected StockItem() { }
+
 		// Constructor to create a new entity
 		public StockItem(string sku, int idWarehouse)
 		{
@@ -46,6 +54,10 @@ namespace TechShop.Inventory.Core.Entities
 			QuantityAvailable = quantityAvailable;
 			QuantityReserved = quantityReserved;
 		}
+		#endregion
+
+
+		#region DOMAIN METHODS
 
 		public void AddStock(int quantity)
 		{
@@ -66,35 +78,97 @@ namespace TechShop.Inventory.Core.Entities
 			RegisterMovement(this.IdStockItem, MovementType.ADJUST, quantity, reason);
 		}
 
-		public void SellStock(int quantity, string referenceId)
+		public void SellStock(int idStockReservation, DateTime now)
 		{
-			validateQuantity(quantity);
-			if (quantity > QuantityReserved) throw new InsufficientStockException(Sku, quantity, QuantityReserved);
-			QuantityReserved -= quantity;
+			var reservation = _reservations.FirstOrDefault(res => res.IdStockReservation == idStockReservation)
+				?? throw new StockReservationNotFoundException(idStockReservation);
 
-			RegisterMovement(this.IdStockItem, MovementType.OUT, quantity, "Sell stock", referenceId);
+			reservation.Confirm(now);
+
+			validateQuantity(reservation.Quantity);
+			if (reservation.Quantity > QuantityReserved) throw new InsufficientStockException(Sku, reservation.Quantity, QuantityReserved);
+
+			QuantityReserved -= reservation.Quantity;
+
+			RegisterMovement(
+				IdStockItem,
+				MovementType.OUT,
+				reservation.Quantity,
+				"Sell",
+				reservation.ReferenceId
+			);
 		}
 
-		public void ReserveStock(int quantity)
+		public void ReserveStock(
+			int quantity,
+			DateTime now,
+			TimeSpan duration,
+			string reason, 
+			string referenceId)
 		{
+
 			validateQuantity(quantity);
 			if (quantity > QuantityAvailable) throw new InsufficientStockException(Sku, quantity, QuantityAvailable);
-			
+
 			QuantityAvailable -= quantity;
 			QuantityReserved += quantity;
 
-			RegisterMovement(this.IdStockItem, MovementType.RESERVE, quantity, "Reserve Stock");
+			var reservation = new StockReservation(
+				IdStockItem,
+				quantity,
+				now, 
+				now.Add(duration),
+				reason, 
+				referenceId
+			);
+
+			_reservations.Add(reservation);
+			
+			RegisterMovement(IdStockItem, MovementType.RESERVE, reservation.Quantity, reservation.Reason, reservation.ReferenceId);
+		}
+		
+		public void CancelStockReservation(int idStockReservation)
+		{
+
+			var reservation = _reservations.FirstOrDefault(res => res.IdStockReservation == idStockReservation);
+
+			if (reservation == null) throw new StockReservationNotFoundException(idStockReservation);
+
+			reservation.Cancel();
+
+			ReleaseReservedStock(reservation.Quantity, "Cancelled reservation");
 		}
 
-		public void ReleaseStock(int quantity)
+		public void ExpireStockReservations(DateTime now)
 		{
-			validateQuantity(quantity);
+			var stockReservations = _reservations.FindAll(
+				res => res.Status == ReservationStatus.PENDING
+				&& res.ExpiresAt <= now
+			);
+
+			if (stockReservations.Count == 0) return;
+
+			foreach (var reservation in stockReservations)
+			{
+				reservation.Expire(now);
+
+				ReleaseReservedStock(reservation.Quantity, "Expired reservation");
+			}
+		}
+
+
+		#endregion DOMAIN METHODS
+
+		private void ReleaseReservedStock(int quantity, string reason)
+		{
+			// Ensure the stock invariant
 			if (quantity > QuantityReserved) throw new InsufficientStockException(Sku, quantity, QuantityReserved);
-			
+
+			// Then release the reserved stock
 			QuantityReserved -= quantity;
 			QuantityAvailable += quantity;
 
-			RegisterMovement(this.IdStockItem, MovementType.RELEASE, quantity, "Release Stock");
+			RegisterMovement(IdStockItem, MovementType.RELEASE, quantity, reason);
 		}
 
 		private void RegisterMovement(int idStockItem, MovementType movementType, int quantity, string reason, string referenceId = null)
@@ -114,5 +188,7 @@ namespace TechShop.Inventory.Core.Entities
 		{
 			if (quantity <= 0) throw new InvalidQuantityException(quantity);
 		}
+
 	}
-	}
+
+}
