@@ -103,7 +103,7 @@ namespace TechShop.Inventory.Core.Entities
 			int quantity,
 			DateTime now,
 			TimeSpan duration,
-			string reason, 
+			string reason,
 			string referenceId)
 		{
 
@@ -136,7 +136,7 @@ namespace TechShop.Inventory.Core.Entities
 
 			reservation.Cancel();
 
-			ReleaseReservedStock(reservation.Quantity, "Cancelled reservation");
+			ReleaseReservedStock(reservation.Quantity, "Cancelled reservation", reservation.ReferenceId);
 		}
 
 		public void ExpireStockReservations(DateTime now)
@@ -152,14 +152,14 @@ namespace TechShop.Inventory.Core.Entities
 			{
 				reservation.Expire(now);
 
-				ReleaseReservedStock(reservation.Quantity, "Expired reservation");
+				ReleaseReservedStock(reservation.Quantity, "Expired reservation", reservation.ReferenceId);
 			}
 		}
 
 
 		#endregion DOMAIN METHODS
 
-		private void ReleaseReservedStock(int quantity, string reason)
+		private void ReleaseReservedStock(int quantity, string reason, string referenceId)
 		{
 			// Ensure the stock invariant
 			if (quantity > QuantityReserved) throw new InsufficientStockException(Sku, quantity, QuantityReserved);
@@ -168,7 +168,7 @@ namespace TechShop.Inventory.Core.Entities
 			QuantityReserved -= quantity;
 			QuantityAvailable += quantity;
 
-			RegisterMovement(IdStockItem, MovementType.RELEASE, quantity, reason);
+			RegisterMovement(IdStockItem, MovementType.RELEASE, quantity, reason, referenceId);
 		}
 
 		private void RegisterMovement(int idStockItem, MovementType movementType, int quantity, string reason, string referenceId = null)
