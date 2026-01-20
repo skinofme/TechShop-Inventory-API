@@ -9,7 +9,7 @@ namespace TechShop.Inventory.Infrastructure
 	{
 		public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
 		{
-			services.AddDbContext<TechShopInventoryContext>(options
+			services.AddDbContext<TechShopInventoryContext>(options 
 				=> options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
 
 			return services;

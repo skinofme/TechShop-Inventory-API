@@ -57,12 +57,14 @@ public partial class TechShopInventoryContext : DbContext
 
         modelBuilder.Entity<StockReservationEntity>(entity =>
         {
-            entity.HasKey(e => e.IdReservation);
+            entity.HasKey(e => e.IdStockReservation);
 
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysdatetime())");
             entity.Property(e => e.Reason).HasMaxLength(200);
             entity.Property(e => e.ReferenceId).HasMaxLength(50);
-            entity.Property(e => e.Status).HasMaxLength(20);
+            entity.Property(e => e.Status)
+                .HasMaxLength(20)
+                .HasDefaultValue("PENDING");
 
             entity.HasOne(d => d.IdStockItemNavigation).WithMany(p => p.StockReservations)
                 .HasForeignKey(d => d.IdStockItem)

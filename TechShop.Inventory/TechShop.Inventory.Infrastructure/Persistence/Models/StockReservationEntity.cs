@@ -5,7 +5,7 @@ namespace TechShop.Inventory.Infrastructure.Persistence.Models;
 
 public partial class StockReservationEntity
 {
-    public int IdReservation { get; set; }
+    public int IdStockReservation { get; set; }
 
     public int IdStockItem { get; set; }
 
@@ -13,7 +13,7 @@ public partial class StockReservationEntity
 
     public DateTime CreatedAt { get; set; }
 
-    public DateTime? ExpiresAt { get; set; }
+    public DateTime ExpiresAt { get; set; }
 
     public string Status { get; set; } = null!;
 
