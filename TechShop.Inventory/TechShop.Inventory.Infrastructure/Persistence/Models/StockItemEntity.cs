@@ -21,6 +21,8 @@ public partial class StockItemEntity
 
     public bool IsActive { get; set; }
 
+    public byte[] VersionRow { get; set; } = null!;
+
     public virtual WarehouseEntity IdWarehouseNavigation { get; set; } = null!;
 
     public virtual ICollection<InventoryMovementEntity> InventoryMovements { get; set; } = new List<InventoryMovementEntity>();

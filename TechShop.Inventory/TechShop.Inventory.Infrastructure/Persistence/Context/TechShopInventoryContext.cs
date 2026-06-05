@@ -51,6 +51,9 @@ public partial class TechShopInventoryContext : DbContext
             entity.Property(e => e.LastUpdated).HasDefaultValueSql("(sysdatetime())");
             entity.Property(e => e.QuantityTotal).HasComputedColumnSql("([QuantityAvailable]+[QuantityReserved])", true);
             entity.Property(e => e.Sku).HasMaxLength(50);
+            entity.Property(e => e.VersionRow)
+                .IsRowVersion()
+                .IsConcurrencyToken();
 
             entity.HasOne(d => d.IdWarehouseNavigation).WithMany(p => p.StockItems)
                 .HasForeignKey(d => d.IdWarehouse)

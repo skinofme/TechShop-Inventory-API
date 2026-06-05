@@ -24,6 +24,7 @@ CREATE TABLE StockItems(
 	QuantityTotal AS (QuantityAvailable + QuantityReserved) PERSISTED,
 	LastUpdated DATETIME2 NOT NULL DEFAULT SYSDATETIME(),
 	IsActive BIT NOT NULL DEFAULT 1,
+	VersionRow ROWVERSION,
 
 	CONSTRAINT PK_StockItems PRIMARY KEY (IdStockItem),
 	CONSTRAINT FK_StockItems_Warehouses_IdWarehouse FOREIGN KEY (IdWarehouse) REFERENCES Warehouses(IdWarehouse),
