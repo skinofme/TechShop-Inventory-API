@@ -6,7 +6,7 @@
 		public DateTime CurrentTime { get; }
 
 		public StockReservationExpiredException(DateTime expiresAt, DateTime currentTime)
-		:base ($"Reservation is already expired at {expiresAt}. Current time: {currentTime}.")
+			:base($"Reservation is already expired at {expiresAt}. Current time: {currentTime}.")
 		{
 			ExpiresAt = expiresAt;
 			CurrentTime = currentTime;

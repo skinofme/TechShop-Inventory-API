@@ -8,7 +8,7 @@ namespace TechShop.Inventory.Core.Exceptions.StockReservation
 		public string Operation {  get; }
 
 		public InvalidStockReservationStateException(ReservationStatus currentStatus, string operation)
-			:base($"Cannot {operation} reservation in state {currentStatus}")
+			:base($"Cannot {operation} reservation in state {currentStatus}.")
 		{
 			CurrentStatus = currentStatus;
 			Operation = operation;
