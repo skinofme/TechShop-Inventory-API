@@ -1,6 +1,6 @@
 ﻿using TechShop.Inventory.Core.Entities;
 
-namespace TechShop.Inventory.Core.Interfaces
+namespace TechShop.Inventory.Core.Interfaces.Repositories
 {
 	public interface IStockItemRepository
 	{

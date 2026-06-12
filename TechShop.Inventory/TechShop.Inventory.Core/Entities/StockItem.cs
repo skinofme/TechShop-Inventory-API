@@ -37,17 +37,17 @@ namespace TechShop.Inventory.Core.Entities
 
 		#region	FACTORY METHODS
 		
-		public static StockItem Create(string sku, Guid idWarehouse)
+		public static StockItem Create(Guid idWarehouse, string sku)
 		{
 
-			if (idWarehouse == Guid.Empty) throw new Exceptions.StockItem.InvalidIdWarehouseException(idWarehouse);
+			if (idWarehouse == Guid.Empty) throw new InvalidIdWarehouseException(idWarehouse);
 			if (string.IsNullOrWhiteSpace(sku)) throw new InvalidSkuException(sku);
 
 			return new StockItem()
 			{
 				IdStockItem = Guid.NewGuid(),
-				Sku = sku,
 				IdWarehouse = idWarehouse,
+				Sku = sku,
 				IsActive = true,
 				QuantityAvailable = 0,
 				QuantityReserved = 0
@@ -231,7 +231,7 @@ namespace TechShop.Inventory.Core.Entities
 
 		private static void ValidateState(Guid idWarehouse, string sku, int quantityAvailable, int quantityReserved)
 		{
-			if (idWarehouse == Guid.Empty) throw new Exceptions.StockItem.InvalidIdWarehouseException(idWarehouse);
+			if (idWarehouse == Guid.Empty) throw new InvalidIdWarehouseException(idWarehouse);
 			if (string.IsNullOrWhiteSpace(sku)) throw new InvalidSkuException(sku);
 			if (quantityAvailable < 0) throw new InvalidQuantityException(quantityAvailable);
 			if (quantityReserved < 0 ) throw new InvalidQuantityException(quantityReserved);

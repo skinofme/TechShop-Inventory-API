@@ -1,4 +1,4 @@
-﻿namespace TechShop.Inventory.Core.Interfaces
+﻿namespace TechShop.Inventory.Core.Interfaces.Repositories
 {
 	public interface IRepository<T> where T : class
 	{

@@ -1,7 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using TechShop.Inventory.Core.Interfaces;
+using TechShop.Inventory.Core.Interfaces.Repositories;
+using TechShop.Inventory.Infrastructure.Persistence;
 using TechShop.Inventory.Infrastructure.Persistence.Context;
+using TechShop.Inventory.Infrastructure.Persistence.Repositories;
 
 namespace TechShop.Inventory.Infrastructure
 {
@@ -11,6 +15,9 @@ namespace TechShop.Inventory.Infrastructure
 		{
 			services.AddDbContext<TechShopInventoryContext>(options 
 				=> options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+
+			services.AddScoped<IStockItemRepository, StockItemRepository>();
+			services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 			return services;
 		}
