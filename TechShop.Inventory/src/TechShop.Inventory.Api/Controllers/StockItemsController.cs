@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using TechShop.Inventory.Application.Features.Commands.CreateStockItem;
 using TechShop.Inventory.Application.Features.Queries.GetStockItemById;
 
 namespace TechShop.Inventory.Api.Controllers
@@ -8,11 +9,15 @@ namespace TechShop.Inventory.Api.Controllers
 	public class StockItemsController : ControllerBase
 	{
 		private readonly GetStockItemByIdQueryHandler _getByIdHandler;
+		private readonly CreateStockItemCommandHandler _createStockItemCommandHandler;
+
 
 		public StockItemsController(
-			GetStockItemByIdQueryHandler getByIdHandler)
+			GetStockItemByIdQueryHandler getByIdHandler,
+			CreateStockItemCommandHandler createStockItemCommandHandler)
 		{
 			_getByIdHandler = getByIdHandler;
+			_createStockItemCommandHandler = createStockItemCommandHandler;
 		}
 
 		[HttpGet("{id:guid}")]
@@ -23,7 +28,15 @@ namespace TechShop.Inventory.Api.Controllers
 
 			if(stockItem == null) return NotFound();
 			
-			return Ok(stockItem);
+			return Ok(stockItem);	//Stef's tab
+		}
+
+		[HttpPost]
+		public async Task<IActionResult> Create([FromBody] CreateStockItemCommand command, CancellationToken cancellationToken)
+		{
+			var stockItem = await _createStockItemCommandHandler.Handle(command, cancellationToken);
+			
+			return CreatedAtAction(nameof(GetById), new { id = stockItem.IdStockItem}, stockItem);
 		}
 	}
 }

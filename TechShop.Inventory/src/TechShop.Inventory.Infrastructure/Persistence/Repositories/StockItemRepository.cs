@@ -24,7 +24,6 @@ namespace TechShop.Inventory.Infrastructure.Persistence.Repositories
 				Sku = stockItem.Sku,
 				QuantityAvailable = stockItem.QuantityAvailable,
 				QuantityReserved = stockItem.QuantityReserved,
-				QuantityTotal = stockItem.QuantityTotal,
 				IsActive = stockItem.IsActive,
 			};
 
